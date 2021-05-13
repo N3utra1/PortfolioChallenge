@@ -8,14 +8,21 @@ scale = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. 
 # to grayscale with less than 8-bit 
 # precision
 # Assign a character for each pixel
-def ImageToAscii(fileName):
+def ImageToAscii(fileName, factor):
     print("Generating image for file: " + fileName) 
+
     #get file and convert to gray scale (pillow)
     im = Image.open(fileName).convert('LA')
     im = im.convert ('RGB')
     width, height = im.size
+    im = im.resize((math.floor(width*factor), math.floor(height*factor)), Image.ANTIALIAS)
+    width, height = im.size
+
     #create string to store chars
     ascii = ""
+
+    #get the lower resolution image
+
     #for each pixel, compute average brightness
     for x in range(width):
         for y in range(height):
@@ -24,12 +31,12 @@ def ImageToAscii(fileName):
             #find which value will represent the pixel
             location = int((brightness//3.541)-3)
             pixelChar = scale[location]
-            ascii += pixelChar
+            ascii += pixelChar + " "
         ascii += '\n'
     return ascii 
 
 def main():
     textFile = open("output.txt", "w")
-    textFile.write(ImageToAscii(sys.argv[1]))
+    textFile.write(ImageToAscii(sys.argv[1], float(sys.argv[2])))
 
 main()
